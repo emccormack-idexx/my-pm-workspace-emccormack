@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Streakly — Comeback Screen Prototype</title>
+<style>
+  :root {
+    --primary: #ff6b6b;
+    --secondary: #ffa07a;
+    --accent: #ffd93d;
+    --bg: #fff9f5;
+    --surface: #ffffff;
+    --text: #2d2020;
+    --text-muted: #8a7a76;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 20px;
+    background: #f1e9e4;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    color: var(--text);
+    padding: 24px 12px 48px;
+  }
+
+  /* ---------- Prototype-only controls (not part of the product UI) ---------- */
+  .proto-controls {
+    width: 100%;
+    max-width: 420px;
+    background: #2d2020;
+    color: #fff;
+    border-radius: 12px;
+    padding: 12px 16px;
+    font-size: 13px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .proto-controls .label {
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-size: 11px;
+    color: #d8c9c4;
+  }
+  .proto-controls .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  .proto-controls button {
+    background: #4a3a36;
+    color: #fff;
+    border: 1px solid #6b5852;
+    border-radius: 8px;
+    padding: 6px 10px;
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .proto-controls button.active {
+    background: var(--primary);
+    border-color: var(--primary);
+  }
+  .proto-controls button:hover { opacity: 0.9; }
+  .proto-controls .reset-btn {
+    background: transparent;
+    border: 1px solid #6b5852;
+  }
+
+  /* ---------- Phone frame ---------- */
+  .phone {
+    width: 390px;
+    max-width: 100%;
+    height: 780px;
+    background: var(--bg);
+    border-radius: 40px;
+    border: 10px solid #1a1414;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.25);
+    overflow: hidden;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+  .notch {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: 24px;
+    background: #1a1414;
+    border-radius: 0 0 14px 14px;
+    z-index: 10;
+  }
+
+  .screen {
+    display: none;
+    flex: 1;
+    flex-direction: column;
+    padding: 44px 24px 24px;
+    overflow-y: auto;
+    animation: fadeIn 0.35s ease;
+  }
+  .screen.active { display: flex; }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--primary);
+    margin-bottom: 8px;
+  }
+
+  h1 {
+    font-size: 24px;
+    line-height: 1.25;
+    margin: 0 0 10px;
+  }
+
+  p.sub {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0 0 20px;
+    line-height: 1.5;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 18px;
+    box-shadow: 0 2px 10px rgba(45,32,32,0.06);
+    margin-bottom: 16px;
+  }
+
+  .stat-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .stat-flame {
+    font-size: 34px;
+    line-height: 1;
+  }
+  .stat-number {
+    font-size: 28px;
+    font-weight: 800;
+    color: var(--text);
+    line-height: 1;
+  }
+  .stat-label {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+  }
+
+  .freeze-card {
+    background: linear-gradient(135deg, var(--secondary), var(--accent));
+    border-radius: 18px;
+    padding: 18px;
+    margin-bottom: 16px;
+    color: var(--text);
+  }
+  .freeze-card .tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.6);
+    border-radius: 999px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.03em;
+    margin-bottom: 10px;
+  }
+  .freeze-card h2 {
+    font-size: 17px;
+    margin: 0 0 6px;
+  }
+  .freeze-card p {
+    font-size: 13px;
+    margin: 0 0 14px;
+    color: rgba(45,32,32,0.75);
+  }
+
+  .btn {
+    display: block;
+    width: 100%;
+    text-align: center;
+    padding: 14px 16px;
+    border-radius: 14px;
+    border: none;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--primary);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #ff5252; }
+  .btn-ghost {
+    background: transparent;
+    color: var(--text);
+    text-decoration: underline;
+    font-weight: 600;
+    padding: 10px 0;
+  }
+  .btn-secondary {
+    background: var(--surface);
+    color: var(--text);
+    border: 1.5px solid #ecdedb;
+  }
+
+  .spacer { flex: 1; }
+
+  .confirm-icon {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    background: var(--accent);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 42px;
+    margin: 24px auto 20px;
+  }
+
+  .center { text-align: center; }
+
+  .lesson-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 4px;
+  }
+  .timer-badge {
+    background: var(--text);
+    color: #fff;
+    font-size: 12px;
+    font-weight: 700;
+    border-radius: 999px;
+    padding: 4px 10px;
+  }
+  .lesson-body {
+    background: var(--surface);
+    border-radius: 18px;
+    padding: 20px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text);
+    margin: 14px 0 20px;
+    flex: 1;
+  }
+  .lesson-body strong { color: var(--primary); }
+
+  .streak-ring {
+    width: 130px;
+    height: 130px;
+    border-radius: 50%;
+    background: conic-gradient(var(--primary) 0deg 40deg, #f1e4de 40deg 360deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 10px auto 20px;
+  }
+  .streak-ring-inner {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: var(--bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+  .streak-ring-inner .n { font-size: 28px; font-weight: 800; }
+  .streak-ring-inner .l { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+
+  .badge-protected {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #eafaf0;
+    color: #1f8a4c;
+    border-radius: 999px;
+    padding: 6px 12px;
+    font-size: 12px;
+    font-weight: 700;
+    margin: 0 auto 18px;
+  }
+
+  .step-dots {
+    display: flex;
+    justify-content: center;
+    gap: 6px;
+    margin-top: 14px;
+  }
+  .step-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #e6d6d0;
+  }
+  .step-dots span.on { background: var(--primary); }
+</style>
+</head>
+<body>
+
+  <div class="proto-controls">
+    <div class="label">Prototype controls (not part of the product UI)</div>
+    <div class="row">
+      <span>Days since last app open:</span>
+      <span>
+        <button id="btn-under14" class="active" onclick="setRecency('under14')">10 days (continue track)</button>
+        <button id="btn-over14" onclick="setRecency('over14')">20 days (welcome back)</button>
+      </span>
+    </div>
+    <div class="row">
+      <span id="state-readout">Screen 1 of 4 · Comeback screen</span>
+      <button class="reset-btn" onclick="resetFlow()">Reset flow</button>
+    </div>
+  </div>
+
+  <div class="phone">
+    <div class="notch"></div>
+
+    <!-- Screen 1: Comeback screen -->
+    <section class="screen active" id="screen-1">
+      <div class="eyebrow">Welcome back</div>
+      <h1>Good to see you again, Jordan.</h1>
+      <p class="sub">You've been away for <span id="days-away-text">10</span> days. Your progress is still here — nothing's been lost.</p>
+
+      <div class="card stat-card">
+        <div class="stat-flame">🔥</div>
+        <div>
+          <div class="stat-number">12-day streak</div>
+          <div class="stat-label">Your best streak, saved — not reset to zero</div>
+        </div>
+      </div>
+
+      <div class="freeze-card">
+        <span class="tag">One-tap offer</span>
+        <h2>Protect your next streak</h2>
+        <p>Claim a free streak freeze so one missed day doesn't cost you everything, next time.</p>
+        <button class="btn btn-primary" onclick="claimFreeze()">Claim my streak freeze</button>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn btn-ghost" onclick="goTo(3)">Skip for now, start my comeback lesson</button>
+      <div class="step-dots"><span class="on"></span><span></span><span></span><span></span></div>
+    </section>
+
+    <!-- Screen 2: Streak-freeze claimed -->
+    <section class="screen" id="screen-2">
+      <div class="spacer"></div>
+      <div class="center">
+        <div class="confirm-icon">🛡️</div>
+        <h1>Streak freeze claimed</h1>
+        <p class="sub">If you miss a day next, it's covered. This freeze is good for one use.</p>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-primary" onclick="goTo(3)">Continue to my comeback lesson</button>
+      <div class="step-dots"><span class="on"></span><span class="on"></span><span></span><span></span></div>
+    </section>
+
+    <!-- Screen 3: 60-second comeback lesson -->
+    <section class="screen" id="screen-3">
+      <div class="eyebrow" id="lesson-eyebrow">Continuing your track</div>
+      <div class="lesson-header">
+        <h1 style="margin:0; font-size:20px;" id="lesson-title">Mindful Mornings — Lesson 6</h1>
+        <span class="timer-badge">60 sec</span>
+      </div>
+      <p class="sub" id="lesson-sub">Right where you left off.</p>
+
+      <div class="lesson-body" id="lesson-body">
+        You were building a habit of noticing one thing you're grateful for before checking your phone.
+        Today: try it once, right now — no streak pressure, just the habit itself.
+        <br><br>
+        <strong>Quick prompt:</strong> name one small thing that went right today.
+      </div>
+
+      <button class="btn btn-primary" onclick="goTo(4)">Complete lesson</button>
+      <div class="step-dots"><span class="on"></span><span class="on"></span><span class="on"></span><span></span></div>
+    </section>
+
+    <!-- Screen 4: Completion -->
+    <section class="screen" id="screen-4">
+      <div class="spacer"></div>
+      <div class="center">
+        <div class="streak-ring">
+          <div class="streak-ring-inner">
+            <div class="n">1</div>
+            <div class="l">Day 1</div>
+          </div>
+        </div>
+        <h1>You're back in it.</h1>
+        <p class="sub">Your new streak starts today. Your 12-day best is saved, and your streak freeze is ready if you need it.</p>
+        <div class="badge-protected" id="protected-badge">🛡️ Streak freeze active</div>
+      </div>
+      <div class="spacer"></div>
+      <button class="btn btn-secondary" onclick="resetFlow()">Back to home</button>
+      <div class="step-dots"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
+    </section>
+
+  </div>
+
+<script>
+  let freezeClaimed = false;
+  let recency = 'under14';
+
+  const screenNames = {
+    1: 'Screen 1 of 4 · Comeback screen',
+    2: 'Screen 2 of 4 · Streak-freeze claimed',
+    3: 'Screen 3 of 4 · Comeback lesson',
+    4: 'Screen 4 of 4 · Completion'
+  };
+
+  function goTo(n) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    document.getElementById('screen-' + n).classList.add('active');
+    document.getElementById('state-readout').textContent = screenNames[n];
+    if (n === 3) applyLessonBranch();
+    if (n === 4) applyProtectedBadge();
+  }
+
+  function claimFreeze() {
+    freezeClaimed = true;
+    goTo(2);
+  }
+
+  function setRecency(value) {
+    recency = value;
+    document.getElementById('btn-under14').classList.toggle('active', value === 'under14');
+    document.getElementById('btn-over14').classList.toggle('active', value === 'over14');
+    document.getElementById('days-away-text').textContent = value === 'under14' ? '10' : '20';
+    if (document.getElementById('screen-3').classList.contains('active')) {
+      applyLessonBranch();
+    }
+  }
+
+  function applyLessonBranch() {
+    if (recency === 'under14') {
+      document.getElementById('lesson-eyebrow').textContent = 'Continuing your track';
+      document.getElementById('lesson-title').textContent = 'Mindful Mornings — Lesson 6';
+      document.getElementById('lesson-sub').textContent = 'Right where you left off.';
+      document.getElementById('lesson-body').innerHTML =
+        'You were building a habit of noticing one thing you\'re grateful for before checking your phone. ' +
+        'Today: try it once, right now — no streak pressure, just the habit itself.' +
+        '<br><br><strong>Quick prompt:</strong> name one small thing that went right today.';
+    } else {
+      document.getElementById('lesson-eyebrow').textContent = 'Welcome back lesson';
+      document.getElementById('lesson-title').textContent = 'A Fresh Start';
+      document.getElementById('lesson-sub').textContent = 'It\'s been a while — here\'s a clean on-ramp back in.';
+      document.getElementById('lesson-body').innerHTML =
+        'It\'s been a few weeks, so let\'s ease back in rather than pick up mid-track. ' +
+        'This short reset covers the core habit in 60 seconds, no catching up required.' +
+        '<br><br><strong>Quick prompt:</strong> what\'s one reason you started Streakly in the first place?';
+    }
+  }
+
+  function applyProtectedBadge() {
+    const badge = document.getElementById('protected-badge');
+    badge.style.display = freezeClaimed ? 'inline-flex' : 'none';
+  }
+
+  function resetFlow() {
+    freezeClaimed = false;
+    goTo(1);
+  }
+</script>
+
+</body>
+</html>
