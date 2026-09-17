@@ -34,4 +34,8 @@ Open `index.html` in a browser. It's a self-contained, clickable mobile-frame pr
 - Final streak-freeze eligibility policy — needs squad/Marcus sign-off before this is real product behavior
 - Non-goals and success-metric targets for the broader Comeback experience (still undefined per `project.md`)
 
+## Tone Reimagining (2026-09-16 update)
+
+Screens 1 and 4 were reworked for a warmer, no-shame, upbeat tone (Peloton-style "PR" language, a streak-journey milestone strip, light confetti). Screen 3 (the lesson) was intentionally left calm and unchanged. Locked mechanics (freeze eligibility, 14-day threshold, palette) were not touched — this was a tone/visual pass only. Full details in [`../docs/pm-brief.md`](../docs/pm-brief.md).
+
 Full brief: [`../docs/pm-brief.md`](../docs/pm-brief.md)

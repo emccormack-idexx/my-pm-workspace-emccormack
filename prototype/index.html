@@ -109,8 +109,129 @@
     padding: 44px 24px 24px;
     overflow-y: auto;
     animation: fadeIn 0.35s ease;
+    position: relative;
   }
   .screen.active { display: flex; }
+
+  /* ---------- Streak journey (Peloton-style milestone strip) ---------- */
+  .journey-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    margin: 0 0 8px;
+  }
+  .journey-track {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 6px;
+    margin-bottom: 16px;
+  }
+  .journey-chip {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    background: var(--surface);
+    border: 1.5px solid #f1e0da;
+    border-radius: 14px;
+    padding: 8px 11px;
+    min-width: 52px;
+  }
+  .journey-chip .icon { font-size: 17px; line-height: 1; }
+  .journey-chip .lbl { font-size: 9.5px; font-weight: 700; color: var(--text-muted); white-space: nowrap; }
+  .journey-chip.current {
+    border-color: var(--primary);
+    background: linear-gradient(135deg, rgba(255,107,107,0.14), rgba(255,217,61,0.14));
+  }
+  .journey-chip.current .lbl { color: var(--text); }
+  .journey-chip.next {
+    border-style: dashed;
+    opacity: 0.65;
+  }
+
+  /* ---------- Confetti burst (celebratory screens only) ---------- */
+  .confetti {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .confetti span {
+    position: absolute;
+    top: -10px;
+    font-size: 20px;
+    opacity: 0;
+    animation: confetti-fall 1.3s ease-in forwards;
+  }
+  @keyframes confetti-fall {
+    0% { opacity: 0; transform: translateY(0) rotate(0deg); }
+    12% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(180px) rotate(220deg); }
+  }
+
+  /* ---------- Screen 0: lock screen + push notification (prototype entry point) ---------- */
+  .lockscreen {
+    background: linear-gradient(180deg, #2d2020, #1a1414);
+    color: #fff;
+    align-items: center;
+    padding-top: 76px !important;
+  }
+  .lock-time { font-size: 60px; font-weight: 300; line-height: 1; }
+  .lock-date { font-size: 15px; color: rgba(255,255,255,0.72); margin-top: 6px; margin-bottom: 44px; }
+  .ios-notification {
+    width: 100%;
+    background: rgba(255,255,255,0.14);
+    border: 1px solid rgba(255,255,255,0.18);
+    border-radius: 16px;
+    padding: 12px 14px;
+    cursor: pointer;
+    text-align: left;
+    color: #fff;
+  }
+  .ios-notification:hover { background: rgba(255,255,255,0.2); }
+  .ios-notification .notif-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+  .ios-notification .notif-icon {
+    width: 22px;
+    height: 22px;
+    border-radius: 6px;
+    background: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+    flex: 0 0 auto;
+  }
+  .ios-notification .notif-app { font-size: 13px; font-weight: 700; flex: 1; }
+  .ios-notification .notif-time { font-size: 12px; color: rgba(255,255,255,0.6); }
+  .ios-notification .notif-body { font-size: 14px; line-height: 1.4; color: rgba(255,255,255,0.92); }
+  .lock-hint {
+    margin-top: 18px;
+    font-size: 12px;
+    color: rgba(255,255,255,0.5);
+    text-align: center;
+  }
+
+  /* ---------- PR countdown teaser ---------- */
+  .pr-teaser {
+    display: inline-block;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--primary);
+    background: rgba(255,107,107,0.08);
+    border-radius: 10px;
+    padding: 6px 12px;
+    margin: 0 0 16px;
+  }
 
   @keyframes fadeIn {
     from { opacity: 0; transform: translateY(8px); }
@@ -124,6 +245,12 @@
     text-transform: uppercase;
     color: var(--primary);
     margin-bottom: 8px;
+  }
+
+  .entry-context {
+    font-size: 11px;
+    color: var(--text-muted);
+    margin-bottom: 10px;
   }
 
   h1 {
@@ -267,28 +394,29 @@
   }
   .lesson-body strong { color: var(--primary); }
 
-  .streak-ring {
-    width: 130px;
-    height: 130px;
-    border-radius: 50%;
-    background: conic-gradient(var(--primary) 0deg 40deg, #f1e4de 40deg 360deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 10px auto 20px;
-  }
-  .streak-ring-inner {
-    width: 100px;
-    height: 100px;
-    border-radius: 50%;
-    background: var(--bg);
+  .new-streak-badge {
     display: flex;
     flex-direction: column;
     align-items: center;
-    justify-content: center;
+    margin: 16px auto 18px;
   }
-  .streak-ring-inner .n { font-size: 28px; font-weight: 800; }
-  .streak-ring-inner .l { font-size: 10px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.05em; }
+  .new-streak-badge .flame { font-size: 48px; line-height: 1; margin-bottom: 8px; }
+  .new-streak-badge .n { font-size: 22px; font-weight: 800; }
+  .new-streak-badge .l { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+
+  .best-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--surface);
+    border: 1.5px solid #f1e0da;
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--text);
+    margin: 0 auto 10px;
+  }
 
   .badge-protected {
     display: inline-flex;
@@ -330,7 +458,7 @@
       </span>
     </div>
     <div class="row">
-      <span id="state-readout">Screen 1 of 4 · Comeback screen</span>
+      <span id="state-readout">Lock screen · tap the notification to open</span>
       <button class="reset-btn" onclick="resetFlow()">Reset flow</button>
     </div>
   </div>
@@ -338,39 +466,74 @@
   <div class="phone">
     <div class="notch"></div>
 
+    <!-- Screen 0: Lock screen + push notification (prototype-only entry point) -->
+    <section class="screen active lockscreen" id="screen-0">
+      <div class="lock-time">9:41</div>
+      <div class="lock-date">Wednesday, September 16</div>
+      <div class="ios-notification" onclick="openNotification()">
+        <div class="notif-top">
+          <span class="notif-icon">🔥</span>
+          <span class="notif-app">Streakly</span>
+          <span class="notif-time">now</span>
+        </div>
+        <div class="notif-body">We miss you! 👋 Your 12-Day PR is still right where you left it — let's keep it going. 🔥</div>
+      </div>
+      <div class="lock-hint">Tap the notification to open Streakly</div>
+    </section>
+
     <!-- Screen 1: Comeback screen -->
-    <section class="screen active" id="screen-1">
-      <div class="eyebrow">Welcome back</div>
-      <h1>Good to see you again, Jordan.</h1>
-      <p class="sub">You've been away for <span id="days-away-text">10</span> days. Your progress is still here — nothing's been lost.</p>
+    <section class="screen" id="screen-1">
+      <div class="entry-context">📲 This is the first thing you see the moment you reopen Streakly</div>
+      <div class="eyebrow">Plot twist: you're back</div>
+      <h1>Well, well, well. Look who it is, Jordan. 👋</h1>
+      <p class="sub"><span id="days-away-text">10</span> days off the grid — no big deal, honestly. Your 12-day PR is exactly where you left it. Let's pick this back up.</p>
 
       <div class="card stat-card">
-        <div class="stat-flame">🔥</div>
+        <div class="stat-flame">🏅</div>
         <div>
-          <div class="stat-number">12-day streak</div>
-          <div class="stat-label">Your best streak, saved — not reset to zero</div>
+          <div class="stat-number">12-Day PR</div>
+          <div class="stat-label">Nobody can take this away from you</div>
         </div>
       </div>
 
+      <div class="journey-label">Your streak journey so far</div>
+      <div class="journey-track">
+        <div class="journey-chip"><div class="icon">🌱</div><div class="lbl">Day 1</div></div>
+        <div class="journey-chip"><div class="icon">⭐</div><div class="lbl">Day 3</div></div>
+        <div class="journey-chip"><div class="icon">🔥</div><div class="lbl">Day 7</div></div>
+        <div class="journey-chip current"><div class="icon">🏅</div><div class="lbl">12-Day PR</div></div>
+        <div class="journey-chip next"><div class="icon">🎯</div><div class="lbl">Day 14</div></div>
+      </div>
+
+      <div class="pr-teaser">🎯 Restart today, and you're 12 days from a new PR</div>
+
       <div class="freeze-card">
         <span class="tag">One-tap offer</span>
-        <h2>Protect your next streak</h2>
-        <p>Claim a free streak freeze so one missed day doesn't cost you everything, next time.</p>
+        <h2>Give future-you a safety net</h2>
+        <p>Claim a free streak freeze so one missed day doesn't wipe the board next time. Consider it insurance against being human. 🛟</p>
         <button class="btn btn-primary" onclick="claimFreeze()">Claim my streak freeze</button>
       </div>
 
       <div class="spacer"></div>
-      <button class="btn btn-ghost" onclick="goTo(3)">Skip for now, start my comeback lesson</button>
+      <button class="btn btn-ghost" onclick="goTo(3)">Skip the freeze, jump to my comeback lesson →</button>
       <div class="step-dots"><span class="on"></span><span></span><span></span><span></span></div>
     </section>
 
     <!-- Screen 2: Streak-freeze claimed -->
     <section class="screen" id="screen-2">
+      <div class="confetti">
+        <span style="left:8%; animation-delay:0s;">🎉</span>
+        <span style="left:24%; animation-delay:.08s;">✨</span>
+        <span style="left:42%; animation-delay:.03s;">🛡️</span>
+        <span style="left:58%; animation-delay:.14s;">🎊</span>
+        <span style="left:74%; animation-delay:.05s;">✨</span>
+        <span style="left:88%; animation-delay:.11s;">🎉</span>
+      </div>
       <div class="spacer"></div>
       <div class="center">
         <div class="confirm-icon">🛡️</div>
-        <h1>Streak freeze claimed</h1>
-        <p class="sub">If you miss a day next, it's covered. This freeze is good for one use.</p>
+        <h1>You're covered! ✨</h1>
+        <p class="sub">If you miss a day next, it's covered. This freeze is good for one use. Future-you says thanks.</p>
       </div>
       <div class="spacer"></div>
       <button class="btn btn-primary" onclick="goTo(3)">Continue to my comeback lesson</button>
@@ -399,20 +562,40 @@
 
     <!-- Screen 4: Completion -->
     <section class="screen" id="screen-4">
-      <div class="spacer"></div>
-      <div class="center">
-        <div class="streak-ring">
-          <div class="streak-ring-inner">
-            <div class="n">1</div>
-            <div class="l">Day 1</div>
-          </div>
-        </div>
-        <h1>You're back in it.</h1>
-        <p class="sub">Your new streak starts today. Your 12-day best is saved, and your streak freeze is ready if you need it.</p>
-        <div class="badge-protected" id="protected-badge">🛡️ Streak freeze active</div>
+      <div class="confetti">
+        <span style="left:10%; animation-delay:0s;">🎉</span>
+        <span style="left:22%; animation-delay:.1s;">🎊</span>
+        <span style="left:38%; animation-delay:.02s;">⭐</span>
+        <span style="left:52%; animation-delay:.16s;">✨</span>
+        <span style="left:66%; animation-delay:.06s;">🎉</span>
+        <span style="left:80%; animation-delay:.13s;">🔥</span>
+        <span style="left:92%; animation-delay:.09s;">🎊</span>
       </div>
       <div class="spacer"></div>
-      <button class="btn btn-secondary" onclick="resetFlow()">Back to home</button>
+      <div class="center">
+        <div class="new-streak-badge">
+          <div class="flame">🔥</div>
+          <div class="n">Day 1</div>
+          <div class="l">Chapter 2 begins</div>
+        </div>
+        <div class="best-chip">🏅 12-Day PR — still yours, always</div>
+        <div class="pr-teaser">🎯 12 more days to a new PR</div>
+        <h1>Boom. You did the thing. 🎉</h1>
+        <p class="sub">Your streak freeze is ready if you need it.</p>
+        <div class="badge-protected" id="protected-badge">🛡️ Streak freeze active</div>
+      </div>
+
+      <div class="journey-label">Your streak journey, continued</div>
+      <div class="journey-track">
+        <div class="journey-chip current"><div class="icon">🔥</div><div class="lbl">Day 1 · New!</div></div>
+        <div class="journey-chip next"><div class="icon">⭐</div><div class="lbl">Day 3</div></div>
+        <div class="journey-chip next"><div class="icon">🎯</div><div class="lbl">Day 7</div></div>
+        <div class="journey-chip"><div class="icon">🏅</div><div class="lbl">12-Day PR</div></div>
+        <div class="journey-chip next"><div class="icon">🏆</div><div class="lbl">Day 13 · New PR</div></div>
+      </div>
+
+      <div class="spacer"></div>
+      <button class="btn btn-secondary" onclick="resetFlow()">Nice. Back to home.</button>
       <div class="step-dots"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></div>
     </section>
 
@@ -423,6 +606,7 @@
   let recency = 'under14';
 
   const screenNames = {
+    0: 'Lock screen · tap the notification to open',
     1: 'Screen 1 of 4 · Comeback screen',
     2: 'Screen 2 of 4 · Streak-freeze claimed',
     3: 'Screen 3 of 4 · Comeback lesson',
@@ -435,6 +619,10 @@
     document.getElementById('state-readout').textContent = screenNames[n];
     if (n === 3) applyLessonBranch();
     if (n === 4) applyProtectedBadge();
+  }
+
+  function openNotification() {
+    goTo(1);
   }
 
   function claimFreeze() {
@@ -479,7 +667,7 @@
 
   function resetFlow() {
     freezeClaimed = false;
-    goTo(1);
+    goTo(0);
   }
 </script>
 
